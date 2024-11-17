@@ -3,7 +3,7 @@ package modelos;
 import java.time.LocalDate;
 
 public abstract class Item {
-    private int id;
+    private long id;
     private String nombre;
     private String descripcion;
     private float precio;
@@ -14,6 +14,17 @@ public abstract class Item {
         this.descripcion = descripcion;
         this.precio = precio;
         this.fechaRegistro = LocalDate.now();
+    }
+
+    public Item() {
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getNombre() {
@@ -44,4 +55,7 @@ public abstract class Item {
         return fechaRegistro;
     }
 
+    public void setFechaRegistro(LocalDate fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
+    }
 }

@@ -3,30 +3,43 @@ package modelos;
 import java.time.LocalDate;
 
 public abstract class Usuario {
-    private String id;
+    private long id;
+    private int tipo;
     private String nombre;
     private String apellido;
     private String telefono;
     private LocalDate fechaNacimiento;
     private LocalDate fechaRegistro;
-    private boolean activo;
+    private int activo;
 
-    public Usuario(String id, String nombre, String apellido, String telefono, LocalDate fechaNacimiento) {
+    public Usuario(long id, int tipo, String nombre, String apellido, String telefono, LocalDate fechaNacimiento) {
         this.id = id;
+        this.tipo = tipo;
         this.nombre = nombre;
         this.apellido = apellido;
         this.telefono = telefono;
         this.fechaNacimiento = fechaNacimiento;
         this.fechaRegistro = LocalDate.now();
-        this.activo = true;
+        this.activo = 1;
     }
 
-    public String getId() {
+    public Usuario() {
+    }
+
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
+    }
+
+    public int getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(int tipo) {
+        this.tipo = tipo;
     }
 
     public String getNombre() {
@@ -69,11 +82,11 @@ public abstract class Usuario {
         this.fechaRegistro = fechaRegistro;
     }
 
-    public boolean estaActivo() {
+    public int getActivo() {
         return activo;
     }
 
-    public void setActivo(boolean activo) {
+    public void setActivo(int activo) {
         this.activo = activo;
     }
 }

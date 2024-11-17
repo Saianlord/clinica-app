@@ -3,8 +3,8 @@ package modelos;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public class Cita {
-    private int id;
+public class Cita implements Comparable<Cita>{
+    private long id;
     private Odontologo odontologo;
     private Paciente paciente;
     private Recepcionista recepcionista;
@@ -16,13 +16,26 @@ public class Cita {
     private LocalTime horaFinal;
     private String observaciones;
 
-    public Cita(Odontologo odontologo, Paciente paciente, Recepcionista recepcionista, String motivo, EstadoCita estado) {
+    public Cita(Odontologo odontologo, Paciente paciente, Recepcionista recepcionista, String motivo, LocalDate fechaAtencion, LocalTime horaInicial) {
         this.odontologo = odontologo;
         this.paciente = paciente;
         this.recepcionista = recepcionista;
         this.motivo = motivo;
-        this.estado = estado;
+        this.estado = EstadoCita.PENDIENTE;
+        this.fechaAtencion = fechaAtencion;
+        this.horaInicial = horaInicial;
         this.fechaRegistro = LocalDate.now();
+    }
+
+    public Cita() {
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public Odontologo getOdontologo() {
@@ -73,6 +86,14 @@ public class Cita {
         this.fechaAtencion = fechaAtencion;
     }
 
+    public LocalDate getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public void setFechaRegistro(LocalDate fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
+    }
+
     public LocalTime getHoraInicial() {
         return horaInicial;
     }
@@ -95,5 +116,11 @@ public class Cita {
 
     public void setObservaciones(String observaciones) {
         this.observaciones = observaciones;
+    }
+
+
+    @Override
+    public int compareTo(Cita otraCita) {
+        return this.horaInicial.compareTo(otraCita.getHoraInicial());
     }
 }

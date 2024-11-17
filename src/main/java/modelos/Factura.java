@@ -9,17 +9,15 @@ public class Factura {
     private Recepcionista recepcionista;
     private MetodoPago metodoPago;
     private String numeroFactura;
-    private boolean pago;
     private float totalPago;
     private LocalDate fechaEmision;
 
-    public Factura(Paciente paciente, Cita cita, Recepcionista recepcionista, MetodoPago metodoPago, String numeroFactura, boolean pago, float totalPago) {
+    public Factura(Paciente paciente, Cita cita, Recepcionista recepcionista, MetodoPago metodoPago, String numeroFactura, float totalPago) {
         this.paciente = paciente;
         this.cita = cita;
         this.recepcionista = recepcionista;
         this.metodoPago = metodoPago;
         this.numeroFactura = numeroFactura;
-        this.pago = pago;
         this.totalPago = totalPago;
         this.fechaEmision = LocalDate.now();
     }
@@ -67,14 +65,6 @@ public class Factura {
 
     public void setNumeroFactura(String numeroFactura) {
         this.numeroFactura = numeroFactura;
-    }
-
-    public boolean isPago() {
-        return pago;
-    }
-
-    public void setPago(boolean pago) {
-        this.pago = pago;
     }
 
     public float getTotalPago() {

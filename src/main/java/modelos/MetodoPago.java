@@ -1,18 +1,24 @@
 package modelos;
 
 public enum MetodoPago {
-    EFECTIVO("Efectivo"),
-    CREDITO("Tarjeta de Crédito"),
-    DEBITO("Tarjeta de Débito"),
-    SINPE("Sinpe Móvil");
+    EFECTIVO("Efectivo", 1),
+    CREDITO("Tarjeta de Crédito", 2),
+    DEBITO("Tarjeta de Débito", 3),
+    SINPE("Sinpe Móvil", 4);
 
     private final String nombre;
+    private final int id;
 
-    MetodoPago(String nombre) {
+    MetodoPago(String nombre, int id) {
         this.nombre = nombre;
+        this.id = id;
     }
 
     public String getNombre() {
         return nombre;
+    }
+
+    public int getId() {
+        return id;
     }
 }

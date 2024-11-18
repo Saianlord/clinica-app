@@ -13,21 +13,19 @@ public class SQLiteConnection {
     private SQLiteConnection() {
     }
 
-    public static Connection getConnection() {
-        if (connection == null) {
-            try {
-                connection = DriverManager.getConnection(DATABASE_URL);
-                showAutoClosingMessage("Conexión a SQLite establecida.", "Conexión Exitosa", JOptionPane.INFORMATION_MESSAGE);
-                return connection;
-            } catch (SQLException e) {
-                showAutoClosingMessage("Error al conectar a la base de datos: " + e.getMessage(),
-                        "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-            }
+    public static Connection getConnection() throws SQLException {
+        try {
+            Connection conn = DriverManager.getConnection(DATABASE_URL);
+            showAutoClosingMessage("Conexión a SQLite establecida.", "Conexión Exitosa", JOptionPane.INFORMATION_MESSAGE);
+            return conn;
+        } catch (SQLException e) {
+            showAutoClosingMessage("Error al conectar a la base de datos: " + e.getMessage(),
+                    "Error de Conexión", JOptionPane.ERROR_MESSAGE);
+            throw e;
         }
-        return connection;
     }
 
-    private static void showAutoClosingMessage(String message, String title, int messageType) {
+    public static void showAutoClosingMessage(String message, String title, int messageType) {
         JOptionPane pane = new JOptionPane(message, messageType, JOptionPane.DEFAULT_OPTION);
         javax.swing.JDialog dialog = pane.createDialog(title);
         dialog.setModal(false);

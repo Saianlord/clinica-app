@@ -3,7 +3,7 @@ package modelos;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public class Cita implements Comparable<Cita>{
+public class Cita implements Comparable<Cita> {
     private long id;
     private Odontologo odontologo;
     private Paciente paciente;
@@ -122,5 +122,15 @@ public class Cita implements Comparable<Cita>{
     @Override
     public int compareTo(Cita otraCita) {
         return this.horaInicial.compareTo(otraCita.getHoraInicial());
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%-5d %-20s %-20s %-12s %-8s",
+                id, // ID de la cita
+                paciente.getNombre(), // Nombre del paciente
+                odontologo.getNombre(), // Nombre del odontólogo
+                fechaAtencion, // Fecha de atención
+                horaInicial); // Hora inicial
     }
 }

@@ -82,7 +82,7 @@ public class CitaRepositorio {
         }
     }
 
-    public static List<Cita> porFecha(LocalDate fecha) throws SQLException {
+    public List<Cita> porFecha(LocalDate fecha) throws SQLException {
         List<Cita> citas = new ArrayList<>();
         String sql = "SELECT " +
                 "c.*, " +
@@ -119,7 +119,7 @@ public class CitaRepositorio {
         return citas;
     }
 
-    private static Cita crearCita(ResultSet rs) throws SQLException {
+    private Cita crearCita(ResultSet rs) throws SQLException {
 
         Odontologo odontologo = new Odontologo();
         odontologo.setId(rs.getLong("odontologo_id"));

@@ -3,20 +3,20 @@ package estructuraDatos;
 import modelos.Cita;
 
 public class Nodo {
-    private Cita elemento;
+    private Cita cita;
     private Nodo siguiente;
 
-    public Nodo(Cita elemento, Nodo siguiente) {
-        this.elemento = elemento;
-        this.siguiente = siguiente;
+    public Nodo(Cita cita) {
+        this.cita = cita;
+        this.siguiente = null;
     }
 
-    public Cita getElemento() {
-        return elemento;
+    public Cita getCita() {
+        return cita;
     }
 
-    public void setElemento(Cita elemento) {
-        this.elemento = elemento;
+    public void setCita(Cita cita) {
+        this.cita = cita;
     }
 
     public Nodo getSiguiente() {

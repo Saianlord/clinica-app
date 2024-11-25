@@ -2,7 +2,7 @@ package modelos;
 
 import java.time.LocalDate;
 
-public abstract class Usuario {
+public class Usuario {
     private long id;
     private int tipo;
     private String nombre;
@@ -24,6 +24,8 @@ public abstract class Usuario {
     }
 
     public Usuario() {
+        this.fechaRegistro = LocalDate.now();
+        this.activo = 1;
     }
 
     public long getId() {
@@ -88,5 +90,9 @@ public abstract class Usuario {
 
     public void setActivo(int activo) {
         this.activo = activo;
+    }
+
+    public String getNombreCompleto(){
+        return nombre + " " + apellido;
     }
 }

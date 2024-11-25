@@ -1,37 +1,42 @@
 package Util;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
 import javax.swing.*;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class SQLiteConnection {
 
-    private static final String DATABASE_URL = "jdbc:sqlite:baseDatos/clinica_base_datos.db";
-    private static Connection connection;
+    private static String DATABASE_URL = "jdbc:sqlite:baseDatos/clinica_base_datos.db";
+    private static HikariDataSource dataSource;
 
     private SQLiteConnection() {
     }
 
-    public static Connection getConnection() throws SQLException {
-        try {
-            Connection conn = DriverManager.getConnection(DATABASE_URL);
-            showAutoClosingMessage("Conexión a SQLite establecida.", "Conexión Exitosa", JOptionPane.INFORMATION_MESSAGE);
-            return conn;
-        } catch (SQLException e) {
-            showAutoClosingMessage("Error al conectar a la base de datos: " + e.getMessage(),
-                    "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-            throw e;
+    public static Connection getConnection() {
+        if (dataSource == null) {
+            synchronized (SQLiteConnection.class) {
+                if (dataSource == null) {
+                    HikariConfig config = new HikariConfig();
+                    config.setJdbcUrl(DATABASE_URL);
+                    config.setMaximumPoolSize(1);
+                    config.setMinimumIdle(1);
+                    config.setConnectionTestQuery("SELECT 1");
+                    dataSource = new HikariDataSource(config);
+                }
+            }
         }
-    }
 
-    public static void showAutoClosingMessage(String message, String title, int messageType) {
-        JOptionPane pane = new JOptionPane(message, messageType, JOptionPane.DEFAULT_OPTION);
-        javax.swing.JDialog dialog = pane.createDialog(title);
-        dialog.setModal(false);
-        dialog.setVisible(true);
-
-        new Timer(10000, e -> dialog.dispose()).start();
+        try {
+            Connection connection = dataSource.getConnection();
+            JOptionPane.showMessageDialog(null, "Conexión exitosa a la base de datos", "Conexión", JOptionPane.INFORMATION_MESSAGE);
+            return connection;
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al conectar con la base de datos: " + e.getMessage(), "Error de conexión", JOptionPane.ERROR_MESSAGE);
+            throw new RuntimeException(e);
+        }
     }
 
 }

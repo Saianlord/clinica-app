@@ -3,16 +3,16 @@ package modelos;
 import java.time.LocalDate;
 
 public class Factura {
-    private int id;
-    private Paciente paciente;
+    private Long id;
+    private Usuario paciente;
     private Cita cita;
-    private Recepcionista recepcionista;
+    private Usuario recepcionista;
     private MetodoPago metodoPago;
     private String numeroFactura;
     private float totalPago;
     private LocalDate fechaEmision;
 
-    public Factura(Paciente paciente, Cita cita, Recepcionista recepcionista, MetodoPago metodoPago, String numeroFactura, float totalPago) {
+    public Factura(Usuario paciente, Cita cita, Usuario recepcionista, MetodoPago metodoPago, String numeroFactura, float totalPago) {
         this.paciente = paciente;
         this.cita = cita;
         this.recepcionista = recepcionista;
@@ -22,18 +22,18 @@ public class Factura {
         this.fechaEmision = LocalDate.now();
     }
 
-    public int getId() {
+    public Factura() {
+        this.fechaEmision = LocalDate.now();
+    }
+
+    public Long getId() {
         return id;
     }
 
-
-    public Paciente getPaciente() {
-        return paciente;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public void setPaciente(Paciente paciente) {
-        this.paciente = paciente;
-    }
 
     public Cita getCita() {
         return cita;
@@ -43,11 +43,19 @@ public class Factura {
         this.cita = cita;
     }
 
-    public Recepcionista getRecepcionista() {
+    public Usuario getPaciente() {
+        return paciente;
+    }
+
+    public void setPaciente(Usuario paciente) {
+        this.paciente = paciente;
+    }
+
+    public Usuario getRecepcionista() {
         return recepcionista;
     }
 
-    public void setRecepcionista(Recepcionista recepcionista) {
+    public void setRecepcionista(Usuario recepcionista) {
         this.recepcionista = recepcionista;
     }
 
@@ -77,5 +85,9 @@ public class Factura {
 
     public LocalDate getFechaEmision() {
         return fechaEmision;
+    }
+
+    public void setFechaEmision(LocalDate fechaEmision) {
+        this.fechaEmision = fechaEmision;
     }
 }

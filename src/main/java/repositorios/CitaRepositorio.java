@@ -1,5 +1,6 @@
 package repositorios;
 
+import Util.SQLiteConnection;
 import modelos.*;
 
 import java.sql.Connection;
@@ -12,28 +13,24 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static Util.SQLiteConnection.getConnection;
-
 public class CitaRepositorio {
-    private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-    private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
+    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
+    private final Connection conn;
 
 
-    public CitaRepositorio() {
-
+    public CitaRepositorio(Connection conn) {
+        this.conn = conn;
     }
 
-    //Este método actualiza, guarda, y cancela citas dependiendo de si el id de usuario se seteo o no.
-    // Si el id es mayor a 0 actualiza. Si se cambia estado a CANCELADO, la cita se cancela
 
     public void guardarCita(Cita cita) throws SQLException {
         String sql = cita.getId() > 0 ? "UPDATE citas SET odontologo_id = ?, motivo = ?, estado = ?, fecha_atencion = ?, hora_inicio = ?, hora_final = ?, observaciones = ? WHERE id = ?" :
                 "INSERT INTO citas (odontologo_id, motivo, estado, fecha_atencion, hora_inicio, fecha_registro, paciente_id, recepcionista_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = getConnection();
-             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
             preparedStatement.setLong(1, cita.getOdontologo().getId());
             preparedStatement.setString(2, cita.getMotivo());
-            preparedStatement.setString(3, cita.getEstado().toString());
+            preparedStatement.setInt(3, convertirEstadoAInt(cita.getEstado()));
             preparedStatement.setString(4, cita.getFechaAtencion().format(dateFormatter));
             preparedStatement.setString(5, cita.getHoraInicial().format(timeFormatter));
             if (cita.getId() > 0) {
@@ -49,7 +46,6 @@ public class CitaRepositorio {
         }
     }
 
-    //retorna un usuario encontrado por id
     public Cita porId(long id) throws SQLException {
         String sql = "SELECT " +
                 "c.*, " +
@@ -70,8 +66,7 @@ public class CitaRepositorio {
                 "WHERE " +
                 "c.id=?";
 
-        try (Connection conn = getConnection();
-             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
             preparedStatement.setLong(1, id);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
@@ -87,8 +82,11 @@ public class CitaRepositorio {
         String sql = "SELECT " +
                 "c.*, " +
                 "o.nombre AS odontologo_nombre, " +
+                "o.apellido AS odontologo_apellido, " +
                 "p.nombre AS paciente_nombre, " +
+                "p.apellido AS paciente_apellido, " +
                 "r.nombre AS recepcionista_nombre, " +
+                "r.apellido AS recepcionista_apellido, " +
                 "e.estado AS estado_nombre " +
                 "FROM " +
                 "citas AS c " +
@@ -101,9 +99,8 @@ public class CitaRepositorio {
                 "INNER JOIN " +
                 "estados_cita AS e ON c.estado = e.id " +
                 "WHERE " +
-                "c.fecha_atencion=?";
-        try (Connection conn = getConnection();
-             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+                "c.fecha_atencion=? AND c.estado = 2";
+        try (PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
             preparedStatement.setString(1, fecha.format(dateFormatter));
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
@@ -114,22 +111,72 @@ public class CitaRepositorio {
             }
         }
 
-        citas.sort(null);
-
         return citas;
+    }
+
+    public Cita porPaciente(String nombre) throws SQLException {
+        String sql = "SELECT " +
+                "c.*, " +
+                "o.nombre AS odontologo_nombre, " +
+                "o.apellido AS odontologo_apellido, " +
+                "p.nombre AS paciente_nombre, " +
+                "p.apellido AS paciente_apellido, " +
+                "r.nombre AS recepcionista_nombre, " +
+                "r.apellido AS recepcionista_apellido, " +
+                "e.estado AS estado_nombre " +
+                "FROM " +
+                "citas AS c " +
+                "INNER JOIN " +
+                "usuarios AS o ON c.odontologo_id = o.id " +
+                "INNER JOIN " +
+                "usuarios AS p ON c.paciente_id = p.id " +
+                "INNER JOIN " +
+                "usuarios AS r ON c.recepcionista_id = r.id " +
+                "INNER JOIN " +
+                "estados_cita AS e ON c.estado_id = e.id " +
+                "WHERE " +
+                "p.nombre=?";
+        try (PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setString(1, nombre);
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+
+                return crearCita(rs);
+            }
+        }
+
+    }
+
+    public void eliminarCita(Long id) throws SQLException {
+        String sql = "DELETE FROM citas WHERE id = ?";
+
+        try(PreparedStatement preparedStatement = conn.prepareStatement(sql)){
+
+            preparedStatement.setLong(1, id);
+
+            preparedStatement.executeUpdate();
+        }
+
     }
 
     private Cita crearCita(ResultSet rs) throws SQLException {
 
-        Odontologo odontologo = new Odontologo();
+        if(rs.getString("paciente_nombre") == null){
+            return null;
+        }
+
+        Usuario odontologo = new Usuario();
         odontologo.setId(rs.getLong("odontologo_id"));
         odontologo.setNombre(rs.getString("odontologo_nombre"));
-        Paciente paciente = new Paciente();
+        odontologo.setApellido(rs.getString("odontologo_apellido"));
+        Usuario paciente = new Usuario();
         paciente.setId(rs.getLong("paciente_id"));
         paciente.setNombre(rs.getString("paciente_nombre"));
-        Recepcionista recepcionista = new Recepcionista();
+        paciente.setApellido(rs.getString("paciente_apellido"));
+        Usuario recepcionista = new Usuario();
         recepcionista.setId(rs.getLong("recepcionista_id"));
         recepcionista.setNombre(rs.getString("recepcionista_nombre"));
+        recepcionista.setApellido(rs.getString("recepcionista_apellido"));
 
         Cita cita = new Cita();
         cita.setId(rs.getLong("id"));
@@ -147,6 +194,15 @@ public class CitaRepositorio {
         }
 
         return cita;
+
+    }
+
+    private int convertirEstadoAInt(EstadoCita estado) {
+        return switch (estado) {
+            case COMPLETADA -> 1;
+            case PENDIENTE -> 2;
+            case CANCELADA -> 3;
+        };
     }
 
 }

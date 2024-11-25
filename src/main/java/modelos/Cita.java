@@ -5,18 +5,18 @@ import java.time.LocalTime;
 
 public class Cita implements Comparable<Cita> {
     private long id;
-    private Odontologo odontologo;
-    private Paciente paciente;
-    private Recepcionista recepcionista;
+    private Usuario odontologo;
+    private Usuario paciente;
+    private Usuario recepcionista;
     private String motivo;
-    private EstadoCita estado; // Se tiene que definir el enum de Estado cita
+    private EstadoCita estado; 
     private LocalDate fechaAtencion;
     private LocalDate fechaRegistro;
     private LocalTime horaInicial;
     private LocalTime horaFinal;
     private String observaciones;
 
-    public Cita(Odontologo odontologo, Paciente paciente, Recepcionista recepcionista, String motivo, LocalDate fechaAtencion, LocalTime horaInicial) {
+    public Cita(Usuario odontologo, Usuario paciente, Usuario recepcionista, String motivo, LocalDate fechaAtencion, LocalTime horaInicial) {
         this.odontologo = odontologo;
         this.paciente = paciente;
         this.recepcionista = recepcionista;
@@ -28,6 +28,8 @@ public class Cita implements Comparable<Cita> {
     }
 
     public Cita() {
+        this.estado = EstadoCita.PENDIENTE;
+        this.fechaRegistro = LocalDate.now();
     }
 
     public long getId() {
@@ -38,27 +40,27 @@ public class Cita implements Comparable<Cita> {
         this.id = id;
     }
 
-    public Odontologo getOdontologo() {
+    public Usuario getOdontologo() {
         return odontologo;
     }
 
-    public void setOdontologo(Odontologo odontologo) {
+    public void setOdontologo(Usuario odontologo) {
         this.odontologo = odontologo;
     }
 
-    public Paciente getPaciente() {
+    public Usuario getPaciente() {
         return paciente;
     }
 
-    public void setPaciente(Paciente paciente) {
+    public void setPaciente(Usuario paciente) {
         this.paciente = paciente;
     }
 
-    public Recepcionista getRecepcionista() {
+    public Usuario getRecepcionista() {
         return recepcionista;
     }
 
-    public void setRecepcionista(Recepcionista recepcionista) {
+    public void setRecepcionista(Usuario recepcionista) {
         this.recepcionista = recepcionista;
     }
 
@@ -127,10 +129,10 @@ public class Cita implements Comparable<Cita> {
     @Override
     public String toString() {
         return String.format("%-5d %-20s %-20s %-12s %-8s",
-                id, // ID de la cita
-                paciente.getNombre(), // Nombre del paciente
-                odontologo.getNombre(), // Nombre del odontólogo
-                fechaAtencion, // Fecha de atención
-                horaInicial); // Hora inicial
+                id,
+                paciente.getNombre(),
+                odontologo.getNombre(),
+                fechaAtencion,
+                horaInicial);
     }
 }

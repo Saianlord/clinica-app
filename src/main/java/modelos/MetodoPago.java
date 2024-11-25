@@ -21,4 +21,13 @@ public enum MetodoPago {
     public int getId() {
         return id;
     }
+
+    public static MetodoPago fromId(int id) {
+        for (MetodoPago metodo : values()) {
+            if (metodo.id == id) {
+                return metodo;
+            }
+        }
+        throw new IllegalArgumentException("No se encontró un Método de Pago para el ID: " + id);
+    }
 }
